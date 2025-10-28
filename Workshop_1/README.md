@@ -2,7 +2,7 @@
 
 **Overview**
 
-This section corresponds to the initial phase of the Domotic Circuit Simulator project, where the software requirements and the basic elements for its development are defined.
+This section corresponds to the initial phase of the Domotic Circuit Simulator project, where the software requirements and the basic elements for its development are defined.  
 Here, the information necessary to understand what the system should do, how it should function, and how it is expected to interact with the user is presented.
 
 **Content**
@@ -14,13 +14,13 @@ Here, the information necessary to understand what the system should do, how it 
 
 **Purpose**
 
-This documentation represents the starting point for project development.
+This documentation represents the starting point for project development.  
 Its objective is to define the scope of the system and serve as the basis for the following stages: design, prototyping, and testing.
 
 **Academic Information**
 
-Domotic Circuit Simulator
-Object-Oriented Programming
-School of Engineering
-Universidad Nacional de Colombia
-October 27, 2025
+Domotic Circuit Simulator  
+Object-Oriented Programming  
+School of Engineering  
+Universidad Nacional de Colombia  
+October 27, 2025  
