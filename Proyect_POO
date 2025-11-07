@@ -1,0 +1,225 @@
+from abc import ABC, abstractmethod
+import json
+
+# ==========================
+# USER MANAGEMENT
+# ==========================
+class User:
+    def __init__(self, username, password):
+        self._username = username
+        self._password = password
+        self._projects = []
+
+    def authenticate(self, input_user, input_pass):
+        """Validate user credentials."""
+        return self._username == input_user and self._password == input_pass
+
+    def add_project(self, project):
+        self._projects.append(project)
+
+
+# ==========================
+# FILE HANDLING
+# ==========================
+class FileHandler(ABC):
+    @abstractmethod
+    def read(self, path):
+        pass
+
+    @abstractmethod
+    def write(self, path, data):
+        pass
+
+
+class JsonFileHandler(FileHandler):
+    def read(self, path):
+        with open(path, "r") as file:
+            return json.load(file)
+
+    def write(self, path, data):
+        with open(path, "w") as file:
+            json.dump(data, file, indent=4)
+
+
+# ==========================
+# PROJECT MANAGEMENT
+# ==========================
+class ProjectManager:
+    def __init__(self, file_handler):
+        self._file_handler = file_handler
+        self._current_project = None
+
+    def create_project(self, name):
+        self._current_project = {"name": name, "components": []}
+
+    def save_project(self, path):
+        if self._current_project:
+            self._file_handler.write(path, self._current_project)
+
+    def open_project(self, path):
+        self._current_project = self._file_handler.read(path)
+
+
+# ==========================
+# COMPONENT STRUCTURE
+# ==========================
+class Component(ABC):
+    def __init__(self, comp_id, comp_type):
+        self._id = comp_id
+        self._type = comp_type
+        self._connections = []
+
+    @abstractmethod
+    def simulate(self):
+        pass
+
+
+class Resistor(Component):
+    def __init__(self, comp_id, resistance):
+        super().__init__(comp_id, "Resistor")
+        self._resistance = resistance
+
+    def simulate(self):
+        return f"Simulating resistor with {self._resistance}Ω resistance."
+
+
+class Sensor(Component):
+    def __init__(self, comp_id, sensor_type):
+        super().__init__(comp_id, "Sensor")
+        self._sensor_type = sensor_type
+
+    def simulate(self):
+        return f"Simulating sensor of type {self._sensor_type}."
+
+
+class Relay(Component):
+    def __init__(self, comp_id, state=False):
+        super().__init__(comp_id, "Relay")
+        self._state = state
+
+    def simulate(self):
+        return f"Relay is {'ON' if self._state else 'OFF'}."
+
+
+# ==========================
+# COMPONENT LIBRARY
+# ==========================
+class ComponentLibrary:
+    def __init__(self):
+        self._available_components = ["Resistor", "Sensor", "Relay", "Microcontroller"]
+
+    def get_available_components(self):
+        return self._available_components
+
+
+# ==========================
+# CONNECTIONS AND CIRCUITS
+# ==========================
+class Connection:
+    def __init__(self, start_component, end_component):
+        self._start = start_component
+        self._end = end_component
+
+    def validate(self):
+        return self._start != self._end
+
+
+class CircuitBoard:
+    def __init__(self):
+        self._components = []
+        self._connections = []
+
+    def add_component(self, component):
+        self._components.append(component)
+
+    def connect(self, c1, c2):
+        connection = Connection(c1, c2)
+        if connection.validate():
+            self._connections.append(connection)
+        else:
+            print("Invalid connection detected.")
+
+    def simulate(self):
+        for comp in self._components:
+            print(comp.simulate())
+
+
+# ==========================
+# SIMULATION ENGINE
+# ==========================
+class SimulationEngine:
+    def __init__(self, circuit_board):
+        self._circuit_board = circuit_board
+
+    def run_simulation(self):
+        print("Starting simulation...")
+        self._circuit_board.simulate()
+        print("Simulation finished.")
+
+
+# ==========================
+# USER INTERFACE CLASSES
+# ==========================
+class UIController:
+    def __init__(self):
+        self._selected_component = None
+
+    def select_component(self, component):
+        self._selected_component = component
+
+    def rotate_component(self):
+        if self._selected_component:
+            print(f"Component {self._selected_component._id} rotated.")
+
+    def delete_component(self):
+        if self._selected_component:
+            print(f"Component {self._selected_component._id} deleted.")
+
+
+class UIManager:
+    def __init__(self):
+        self._theme = "Light"
+
+    def display_message(self, message):
+        print(f"[UI Message] {message}")
+
+    def change_theme(self, theme):
+        self._theme = theme
+
+
+# ==========================
+# MONITOR AND SETTINGS
+# ==========================
+class Monitor:
+    def __init__(self):
+        self._data = {}
+
+    def update_values(self, node, value):
+        self._data[node] = value
+
+    def show_data(self):
+        for node, value in self._data.items():
+            print(f"Node {node}: {value}V")
+
+
+class SettingManager:
+    def __init__(self):
+        self._language = "English"
+        self._autosave_time = 5  # minutes
+
+    def update_setting(self, name, value):
+        setattr(self, f"_{name}", value)
+
+
+# ==========================
+# HELP SYSTEM
+# ==========================
+class HelpSystem:
+    def __init__(self):
+        self._tips = {
+            "Resistor": "Used to limit current in circuits.",
+            "Relay": "Acts as a switch controlled by electricity."
+        }
+
+    def show_help(self, component_name):
+        return self._tips.get(component_name, "No help available for this component.")
