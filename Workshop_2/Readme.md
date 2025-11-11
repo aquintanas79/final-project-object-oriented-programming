@@ -12,6 +12,8 @@ This section of the repository provides a summary of the conceptual and technica
 - Project structure: organization of the codebase into to clearly separate responsibilities.
 - Initial Python snippets: foundational class templates that illustrate the initial structure of the simulator.
 
+## Purpose
+
 The objective of this section is to provide a concise and clear reference of the simulator’s architecture and design direction, supporting both understanding and future development of the project.
 
 **Academic Information**
