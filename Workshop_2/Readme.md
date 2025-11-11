@@ -14,7 +14,7 @@ This section of the repository provides a summary of the conceptual and technica
 
 The objective of this section is to provide a concise and clear reference of the simulator’s architecture and design direction, supporting both understanding and future development of the project.
 
-Academic Information
+**Academic Information**
 
 Domotic Circuit Simulator
 Object-Oriented Programming
