@@ -16,3 +16,11 @@ class CircuitBoard:
 
     def get_data_for_simulation(self):
         return self.components, self.connections
+
+    def create_connection(self, a, b):
+        from Workshop_3.models.connection import Connection
+        conn = Connection(a, b)
+        if conn.verify_validity():
+            self.connections.append(conn)
+            return conn
+        return None

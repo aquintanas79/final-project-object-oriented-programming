@@ -1,4 +1,4 @@
-from utils.file_handler import FileHandler
+from Workshop_3.utils.file_handler import FileHandler
 
 class ProjectManager:
     """
