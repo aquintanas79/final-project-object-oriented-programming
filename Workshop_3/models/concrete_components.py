@@ -1,4 +1,4 @@
-from models.component import Component
+from Workshop_3.models.component import Component
 
 class Resistor(Component):
     def __init__(self, id, name, x, y, resistance):
@@ -15,3 +15,29 @@ class Light(Component):
 
     def get_type(self):
         return "Light"
+
+
+class Capacitor(Component):
+    def __init__(self, id, x, y, capacitance=10e-6):
+        super().__init__(id, f"C{id}", x, y)
+        self.capacitance = capacitance
+
+    def get_type(self):
+        return "Capacitor"
+
+
+class Diode(Component):
+    def __init__(self, id, x, y):
+        super().__init__(id, f"D{id}", x, y)
+
+    def get_type(self):
+        return "Diode"
+
+
+class Switch(Component):
+    def __init__(self, id, x, y):
+        super().__init__(id, f"SW{id}", x, y)
+        self.state = False
+
+    def get_type(self):
+        return "Switch"
