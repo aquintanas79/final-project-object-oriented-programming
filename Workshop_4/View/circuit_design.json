@@ -1,0 +1,24 @@
+{
+    "components": [
+        {
+            "id": "ID_Capacitor_1",
+            "name": "CID_Capacitor_1",
+            "type": "Capacitor",
+            "x": -28.0,
+            "y": -10.0
+        },
+        {
+            "id": "ID_Diode_2",
+            "name": "DID_Diode_2",
+            "type": "Diode",
+            "x": 179.0,
+            "y": 79.0
+        }
+    ],
+    "connections": [
+        {
+            "a": "CID_Capacitor_1",
+            "b": "DID_Diode_2"
+        }
+    ]
+}
