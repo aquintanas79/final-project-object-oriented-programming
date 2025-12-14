@@ -1,64 +1,99 @@
 classDiagram
-    %% Capa de Vista (View)
+    %% --- CAPA DE VISTA (VIEW LAYER) ---
     class DomoticDragDropGUI {
-        +UIController controller
-        +QGraphicsScene scene
-        +add_component(type)
+        -UIController controller
+        -QGraphicsScene scene
+        -Dict item_to_model
+        +add_component_to_scene(type, x, y)
         +run_simulation()
-        +save_design()
-        +load_design()
+        +update_visuals()
     }
 
     class GraphicsComponentItem {
-        +Component model_comp
+        -Component model_ref
+        -QColor color
         +paint()
+        +mouseMoveEvent()
+    }
+    
+    class Monitor {
+        +display_results(voltage, current)
+        +log_event(message)
     }
 
-    %% Capa de Controlador (Controller)
+    %% --- CAPA DE CONTROLADOR (CONTROLLER LAYER) ---
     class UIController {
-        +CircuitBoard board
-        +SimulationEngine engine
-        +ComponentLibrary library
-        +handle_add_component()
-        +handle_run_simulation()
-        +save_design()
-        +load_design()
+        -CircuitBoard board
+        -SimulationEngine engine
+        -ProjectManager project_manager
+        -ComponentLibrary library
+        -Monitor monitor
+        +handle_add_component(type)
+        +handle_connection(id_a, id_b)
+        +run_circuit_simulation()
     }
 
-    %% Capa de Lógica de Negocio (Logic)
+    class ProjectManager {
+        -FileHandler file_handler
+        -dict current_project
+        +save_current_project()
+        +load_project(path)
+    }
+
+    %% --- CAPA DE INFRAESTRUCTURA (INFRASTRUCTURE) ---
+    class User {
+        -String username
+        -String password
+        +login(password) bool
+    }
+
+    class SettingManager {
+        -dict settings
+        +load_settings()
+    }
+
+    class FileHandler {
+        +save_project(data, path)
+        +read_json(path)
+    }
+
+    %% --- CAPA DE MODELO (MODEL LAYER) ---
+    class CircuitBoard {
+        -List~Component~ components
+        -List~Connection~ connections
+        +add_component(Component)
+        +create_connection(id_a, id_b)
+        +get_component_by_id(id)
+    }
+
     class SimulationEngine {
         +calculate(components, connections)
-    }
-
-    %% Capa de Modelo (Model)
-    class CircuitBoard {
-        +List~Component~ components
-        +List~Connection~ connections
-        +add_component(Component)
-        +create_connection(comp_a, comp_b)
-        +get_data_for_simulation()
+        +check_short_circuits()
     }
 
     class Connection {
-        +Component component_a
-        +Component component_b
-        +verify_validity() bool
+        +Component node_a
+        +Component node_b
+        +bool is_active
+    }
+    
+    class ComponentLibrary {
+        +get_available_types()
+        +create_instance(type)
     }
 
+    %% --- JERARQUÍA DE COMPONENTES (HEART OF THE PROJECT) ---
     class Component {
         <<Abstract>>
-        #str id
-        #str name
-        #float x
-        #float y
+        #String id
+        #String name
+        #String type
+        #float x, y
         #float voltage
-        #float current
-        +move(x, y)
-        +rotate()
-        +get_type()* str
+        +get_type()* String
+        +to_dict()
     }
 
-    %% Componentes Concretos (Herencia)
     class Resistor {
         +float resistance
         +get_type()
@@ -68,29 +103,60 @@ classDiagram
         +get_type()
     }
     class Switch {
-        +bool state
+        +bool is_open
+        +toggle()
         +get_type()
     }
     class Capacitor {
         +float capacitance
         +get_type()
     }
+    class Diode {
+        +float forward_voltage
+        +get_type()
+    }
+    class Sensor {
+        +float threshold
+        +detect()
+        +get_type()
+    }
+    class Relay {
+        +bool state
+        +switch_circuit()
+        +get_type()
+    }
 
-    %% Relaciones
-    DomoticDragDropGUI --> UIController : "Usa"
-    DomoticDragDropGUI *-- GraphicsComponentItem : "Contiene visualmente"
-    GraphicsComponentItem o-- Component : "Referencia modelo"
+    %% --- RELACIONES PRECISAS ---
     
-    UIController --> CircuitBoard : "Gestiona"
-    UIController --> SimulationEngine : "Usa"
-    UIController ..> ComponentLibrary : "Crea componentes con"
+    %% View interactions
+    DomoticDragDropGUI --> UIController : "1. User Action"
+    DomoticDragDropGUI *-- GraphicsComponentItem : "Contains"
+    GraphicsComponentItem --> Component : "Maps to"
 
-    CircuitBoard o-- Component : "Agregación"
-    CircuitBoard *-- Connection : "Composición"
+    %% Controller management
+    UIController --> CircuitBoard : "Modifies"
+    UIController --> SimulationEngine : "Triggers"
+    UIController --> ProjectManager : "Delegates I/O"
+    UIController --> Monitor : "Updates"
+    UIController ..> ComponentLibrary : "Uses"
+
+    %% Project & Data interactions
+    ProjectManager --> FileHandler : "Uses"
     
-    Connection --> Component : "Conecta"
+    %% Main execution flow
+    User ..> DomoticDragDropGUI : "Accesses"
+    SettingManager ..> DomoticDragDropGUI : "Configures"
 
-    Component <|-- Resistor : "Herencia"
-    Component <|-- Light : "Herencia"
-    Component <|-- Switch : "Herencia"
-    Component <|-- Capacitor : "Herencia"
+    %% Core Model structure
+    CircuitBoard o-- Component : "Aggregates"
+    CircuitBoard *-- Connection : "Composes"
+    Connection --> Component : "Links"
+
+    %% Inheritance (Polymorphism)
+    Component <|-- Resistor
+    Component <|-- Light
+    Component <|-- Switch
+    Component <|-- Capacitor
+    Component <|-- Diode
+    Component <|-- Sensor
+    Component <|-- Relay
