@@ -1,12 +1,7 @@
 import sys
-from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QPushButton, QLabel,
-    QListWidget, QVBoxLayout, QHBoxLayout, QMessageBox,
-    QGraphicsScene, QGraphicsView, QGraphicsRectItem, QGraphicsSimpleTextItem,
-    QGraphicsLineItem, QSplitter
-)
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QBrush, QPen
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 
 # Import controller
 from Workshop_3.controllers.ui_controller import UIController
@@ -88,7 +83,7 @@ class DomoticDragDropGUI(QMainWindow):
         self.btn_connect = QPushButton("Connect Components")
         self.btn_delete = QPushButton("Delete Component")
 
-        # NEW BUTTONS: SAVE / LOAD
+        # Save / load buttons
         self.btn_save = QPushButton("Save Circuit")
         self.btn_load = QPushButton("Load Circuit")
 
@@ -102,7 +97,7 @@ class DomoticDragDropGUI(QMainWindow):
         self.btn_connect.clicked.connect(self.enable_connect_mode)
         self.btn_delete.clicked.connect(self.delete_component)
 
-        self.btn_save.clicked.connect(self.save_design)
+        self.btn_save.clicked.connect(self.save_design_dialog)
         self.btn_load.clicked.connect(self.load_design)
 
         # Add widgets
@@ -325,32 +320,60 @@ class DomoticDragDropGUI(QMainWindow):
     # =============================================
     #  SAVE CIRCUIT
     # =============================================
-    def save_design(self):
-        ok = self.controller.save_design("circuit_design.json")
-        if ok:
-            QMessageBox.information(self, "Saved", "Circuit saved successfully.")
+    def save_design_dialog(self):
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            "Guardar diseño de circuito",
+            "",
+            "JSON Files (*.json);;All Files (*)"
+        )
+
+        if not filepath:
+            return  # usuario canceló
+
+        try:
+            # Llamamos al controlador con la ruta seleccionada
+            self.controller.save_design(filepath)
+            QMessageBox.information(self, "Guardar diseño", "Diseño guardado con éxito.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"No se pudo guardar el diseño:\n{e}")
 
     # =============================================
     #  LOAD CIRCUIT
     # =============================================
     def load_design(self):
-        ok = self.controller.load_design("circuit_design.json")
+        filepath, _ = QFileDialog.getOpenFileName(
+            self,
+            "Cargar diseño de circuito",
+            "",
+            "JSON Files (*.json);;All Files (*)"
+        )
+
+        if not filepath:
+            return  # usuario canceló
+
+        ok = self.controller.load_design(filepath)
         if not ok:
             QMessageBox.warning(self, "Error", "Failed to load design.")
             return
 
-        # clear scene
+        # Limpiar vista
         self.scene.clear()
         self.list_components.clear()
         self.item_to_model.clear()
 
-        # Recreate graphics
+        # Recrear componentes visuales
         for model in self.controller.board.components:
-            item = GraphicsComponentItem(model.get_type(), model.name, self.controller, model)
+            item = GraphicsComponentItem(
+                model.get_type(),
+                model.name,
+                self.controller,
+                model
+            )
             item.setPos(model.x, model.y)
             self.scene.addItem(item)
             self.item_to_model[item] = model
             self.list_components.addItem(f"{model.name} ({model.get_type()})")
 
         self._draw_connections()
-        QMessageBox.information(self, "Loaded", "Circuit loaded successfully!")
+        QMessageBox.information(self, "Cargar diseño", "Diseño cargado correctamente.")
