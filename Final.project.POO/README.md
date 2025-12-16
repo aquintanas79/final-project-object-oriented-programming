@@ -72,14 +72,6 @@ Follow these steps to set up the environment and run the simulator:
 
 ---
 
-## 5. System Architecture
-The project is structured into three main layers:
-* **Views (GUI):** Handles user input and rendering (`DomoticDragDropGUI`).
-* **Controllers:** Manages logic flow and updates models (`UIController`).
-* **Models:** Defines the data and business logic (`CircuitBoard`, `SimulationEngine`, `Component` hierarchy).
-
----
-
 ## Authors
 * **Arley Leonardo Quintana Sepulveda** - Electrical Engineering Student
 * **Juan Esteban Rincón Zambrano** - Electrical Engineering Student
